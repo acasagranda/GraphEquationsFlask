@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Absolute Value Equations</h1>
+
+  <img src="/plotabsval.png/{{id}}">
+  <h3>{{errortext}}</h3>
+  
+  <form method="POST">
+    {{template_form.hidden_tag()}}
+    <p>{{ template_form.usereq.label }}
+        {{ template_form.usereq() }}
+    {{template_form.submit()}}</p>
+  </form>
+{% endblock %}

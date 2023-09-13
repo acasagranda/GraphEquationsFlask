@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Absolute Value Equations</h1>
+
+<img src="/plotabsval.png/{{id}}">
+  <h3>{{errortext}}</h3>
+  <p>What would you like to do next?</p>
+  <h3><a href="/absolute_valueintro/{{id}}">Do another puzzle.</a></h3>
+  {% if id!=6 %}
+    <h3><a href="/absolute_valueintro/{{id+1}}">Move up a level.</a></h3>
+  {% endif %}
+  <h3><a href="/">Choose a new function.</a></h3>
+{% endblock %}

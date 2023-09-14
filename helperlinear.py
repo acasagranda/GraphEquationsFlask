@@ -55,6 +55,7 @@ def linearmakeanswer(id):
 
 
 def lineargeteq(usereq,answer,id):
+    #set up error messages for each level
     if id==1:
         errortext=f"Equations should follow the format  y = x + b    or    y = x - b   where b is an integer between 1 and 9."
     elif id==2:
@@ -64,11 +65,14 @@ def lineargeteq(usereq,answer,id):
     else:
         errortext=f"Equations should follow the format\n      y = ax + b  or  y = 1/a x  or   y = -ax + b  or  y = -1/a x + b\nwhere a is an integer between 2 and 8 and b is an integer between -8 and 8.\n"
     
+    #take out spaces and make all vars lowercase
     userin="".join(usereq.split())
     userin=userin.lower()
     frac=False
     msign=1
     bsign=1
+
+    #check if equation is y= or =y
     if userin[:2]=='y=':
         userin=userin[2:]
     elif userin[-2:]=='=y':
@@ -77,16 +81,20 @@ def lineargeteq(usereq,answer,id):
         return 1,0,errortext
     xidx=0
     
+    #find x
     while xidx<len(userin) and userin[xidx]!='x':
         xidx+=1
     if xidx==len(userin):
         return 1,0,errortext
+    #go backward to get coefficient of x
     startidx=xidx-1
     while startidx>-1 and userin[startidx]!='-' and userin[startidx]!='+':
         startidx-=1
     if startidx==-1:
         startidx=0
     startp=startidx
+
+    #take care of fractional m
     if '/' in userin[startp:xidx]:
         frac=True
         if userin[startp]=='1':
@@ -101,7 +109,7 @@ def lineargeteq(usereq,answer,id):
         if startp==xidx or not userin[startp:xidx].isnumeric():
             return 1,0,errortext
         
-    
+    #take care of numer part of m (either int or denom of fraction)
     if userin[startp]=='-':
         msign=-1
         startp+=1
@@ -118,6 +126,8 @@ def lineargeteq(usereq,answer,id):
     if m<-9 or m>9:
         return 1,0,errortext
     userin=userin[:startidx]+userin[xidx+1:]
+
+    #make sure rest of equation is a number (b)
     bsign=1
     if userin=='':
         b=0
@@ -132,8 +142,10 @@ def lineargeteq(usereq,answer,id):
         return 1,0,errortext
     if b<-9 or b>9:
         return 1,0,errortext
+    
     if frac:
         m=1/m
+    #If user has correct answer, change errortext
     if answer[0]==m*msign and answer[1]==b*bsign:
             return m*msign,b*bsign,"Congratulations!  You've found the correct equation for the red line."
     return m*msign,b*bsign,""
@@ -212,17 +224,20 @@ def linearpuzzlegraph(m,b,targeteq,eqtries,userequations,scale,id):
     
 
     ax.plot(x, x,c='k',lw=1.5,label = 'y = x')
-    #ax.plot(x,m*x+b,c='r',lw=1.5,label='y = ?')
     
+    #plot answer line if user has correct equation
     if userequations and userequations[-1][0]==m and userequations[-1][1]==b:  
         ax.plot(x, m*x+b,c='r',lw=3.5,label = userequations[-1][2])
+    #plot answer line if user runs out of turns
     elif id<4 and eqtries>=6:
         ax.plot(x, m*x+b,c='r',lw=1.5,label = targeteq)
     elif id==4 and eqtries>=10:
         ax.plot(x, m*x+b,c='r',lw=1.5,label = targeteq)
+    #plot answer line if normal user turn
     else:
         ax.plot(x, m*x+b,c='r',lw=1.5,label = "y = ?")
     
+    #plot all user lines except for the last one
     if userequations and id<4:
         for idx in range(len(userequations)-1):
             ax.plot(x, userequations[idx][0]*x+userequations[idx][1],c=colors[0][idx],lw=1.5,label = userequations[idx][2])
@@ -230,6 +245,7 @@ def linearpuzzlegraph(m,b,targeteq,eqtries,userequations,scale,id):
         for idx in range(len(userequations)-1):
             ax.plot(x, userequations[idx][0]*x+userequations[idx][1],c=colors[1][idx],lw=1.5,label = userequations[idx][2])  
     
+    #plot last user line if it is not the correct answer
     if userequations and id<4 and (userequations[-1][0]!=m or userequations[-1][1]!=b):
         ax.plot(x, userequations[-1][0]*x+userequations[-1][1],c=colors[0][len(userequations)-1],lw=1.5,label = userequations[-1][2])
     if userequations and id==4 and (userequations[-1][0]!=m or userequations[-1][1]!=b):
